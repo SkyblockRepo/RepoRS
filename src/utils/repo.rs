@@ -4,7 +4,7 @@ use std::{
     path::Path,
 };
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+pub fn download_zip() -> Result<(), Box<dyn std::error::Error>> {
     let url = "https://github.com/SkyblockRepo/Repo/archive/main.zip";
 
     let mut response = ureq::get(url).call()?;
@@ -20,24 +20,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let content = response.body_mut().read_to_vec()?;
             file.write_all(&content)?;
 
-            unzip(file);
+            unzip_repo(file)?;
         } else {
             return Err(format!("Reqwest failed with status {}", response.status()).into());
         }
     } else {
         eprintln!(
-            "SkyblockRepo-main.zip and SkyblockRepo-main/ directory are present, if you wish to refetch them, delete them."
+            "SkyblockRepo-main.zip and SkyblockRepo/ directory are present, if you wish to refetch them, delete them."
         )
     }
 
     Ok(())
 }
 
-fn unzip(file: File) {
-    let mut archive = zip::ZipArchive::new(file).unwrap();
+fn unzip_repo(file: File) -> Result<(), Box<dyn std::error::Error>> {
+    let mut archive = zip::ZipArchive::new(file)?;
 
     for i in 0..archive.len() {
-        let mut file = archive.by_index(i).unwrap();
+        let mut file = archive.by_index(i)?;
         let outpath = match file.enclosed_name() {
             Some(path) => path,
             None => continue,
@@ -45,7 +45,7 @@ fn unzip(file: File) {
 
         if file.is_dir() {
             println!("File {} extracted to \"{}\"", i, outpath.display());
-            create_dir_all(&outpath).unwrap();
+            create_dir_all(&outpath)?;
         } else {
             println!(
                 "File {} extracted to \"{}\" ({} bytes)",
@@ -55,11 +55,11 @@ fn unzip(file: File) {
             );
             if let Some(p) = outpath.parent() {
                 if !p.exists() {
-                    create_dir_all(p).unwrap();
+                    create_dir_all(p)?;
                 }
             }
-            let mut outfile = File::create(&outpath).unwrap();
-            io::copy(&mut file, &mut outfile).unwrap();
+            let mut outfile = File::create(&outpath)?;
+            io::copy(&mut file, &mut outfile)?;
         }
 
         #[cfg(unix)]
@@ -69,10 +69,12 @@ fn unzip(file: File) {
             if let Some(mode) = file.unix_mode() {
                 use std::fs::{Permissions, set_permissions};
 
-                set_permissions(&outpath, Permissions::from_mode(mode)).unwrap();
+                set_permissions(&outpath, Permissions::from_mode(mode))?;
             }
         }
     }
 
-    rename(Path::new("Repo-main"), Path::new("SkyblockRepo")).unwrap();
+    rename(Path::new("Repo-main"), Path::new("SkyblockRepo"))?;
+
+    Ok(())
 }
