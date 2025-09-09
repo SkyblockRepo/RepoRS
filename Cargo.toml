@@ -1,0 +1,23 @@
+[package]
+name = "skyblock-repo"
+description = "Custom hex type with serialization and deserialization as a base 10 number or a hex string."
+
+version = "0.0.1"
+edition = "2024"
+
+license = "MIT"
+repository = "https://github.com/SkyblockRepo/RepoRS"
+readme = "README.md"
+
+[dependencies]
+
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.dev]
+incremental = true
+opt-level = 1
