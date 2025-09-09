@@ -2,10 +2,10 @@ use std::fs::{File, OpenOptions, create_dir_all, exists, metadata, remove_file, 
 use std::io::{self, Write};
 use std::path::Path;
 
-pub fn download_zip(delete_zip: bool) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn download_zip(delete_zip: bool) -> Result<(), Box<dyn std::error::Error>> {
 	let url = "https://github.com/SkyblockRepo/Repo/archive/main.zip";
 
-	let mut response = ureq::get(url).call()?;
+	let response = reqwest::get(url).await?;
 
 	if !(exists("SkyblockRepo-main.zip")? && metadata("SkyblockRepo").is_err()) {
 		if response.status() == 200 {
@@ -15,7 +15,7 @@ pub fn download_zip(delete_zip: bool) -> Result<(), Box<dyn std::error::Error>> 
 				.create_new(true)
 				.open("SkyblockRepo-main.zip")?;
 
-			let content = response.body_mut().read_to_vec()?;
+			let content = response.bytes().await?;
 			file.write_all(&content)?;
 
 			unzip_repo(file)?;

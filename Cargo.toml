@@ -1,6 +1,6 @@
 [package]
 name = "skyblock-repo"
-description = "Custom hex type with serialization and deserialization as a base 10 number or a hex string."
+description = "Cargo package to interface with the Skyblock Repo"
 
 version = "0.0.1"
 edition = "2024"
@@ -11,6 +11,7 @@ readme = "README.md"
 
 [dependencies]
 ureq = "3.1.2"
+reqwest = "0.12.23"
 zip = "5.0.0"
 
 [profile.release]
