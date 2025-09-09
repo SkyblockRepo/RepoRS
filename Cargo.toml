@@ -12,6 +12,10 @@ readme = "README.md"
 [dependencies]
 
 
+[build-dependencies]
+ureq = "3.1.2"
+zip = "5.0.0"
+
 [profile.release]
 opt-level = 3
 lto = true
