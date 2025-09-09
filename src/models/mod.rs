@@ -1,0 +1,22 @@
+use serde::{Deserialize, Serialize};
+
+pub mod enchantments;
+pub mod item;
+pub mod pet;
+pub mod recipe;
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpgradeCost {
+	pub r#type: Option<UpgradeType>,
+	pub item_id: Option<String>,
+	pub essence_type: Option<String>,
+	pub amount: Option<u32>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum UpgradeType {
+	Item,
+	Essence,
+	Coins,
+}
