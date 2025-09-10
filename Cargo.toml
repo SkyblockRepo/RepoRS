@@ -12,8 +12,13 @@ repository = "https://github.com/SkyblockRepo/RepoRS"
 homepage = "https://skyblockrepo.com"
 documentation = "https://skyblockrepo.com/docs/integrations/rust"
 
+[features]
+default = []
+
+log = ["dep:log"]
+
 [dependencies]
-log = "0.4.28"
+log = { version = "0.4.28", optional = true }
 regex = "1.11.2"
 reqwest = "0.12.23"
 rustc-hash = "2.1.1"
