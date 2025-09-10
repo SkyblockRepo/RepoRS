@@ -1,9 +1,21 @@
-use std::fs::{File, OpenOptions, create_dir_all, exists, metadata, remove_file, rename};
+use std::fs::{
+	File,
+	OpenOptions,
+	create_dir_all,
+	exists,
+	metadata,
+	remove_dir,
+	remove_file,
+	rename,
+};
 use std::io::{self, Write};
 use std::path::Path;
 
 use log::{error, trace};
 
+/// Downloads the github SkyblockRepo data and unzips
+///
+/// You can additonally remove the downloaded zip and only keep the extracted directory by passing in `true`
 pub async fn download_zip(delete_zip: bool) -> Result<(), Box<dyn std::error::Error>> {
 	let url = "https://github.com/SkyblockRepo/Repo/archive/main.zip";
 
@@ -80,5 +92,11 @@ fn unzip_repo(file: File) -> Result<(), Box<dyn std::error::Error>> {
 
 	rename(Path::new("Repo-main"), Path::new("SkyblockRepo"))?;
 
+	Ok(())
+}
+
+pub async fn delete_repo_files() -> Result<(), Box<dyn std::error::Error>> {
+	remove_file("SkyblockRepo-main.zip")?;
+	remove_dir("SkyblockRepo")?;
 	Ok(())
 }

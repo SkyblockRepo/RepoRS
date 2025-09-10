@@ -9,7 +9,7 @@ use models::item::SkyblockItem;
 use models::pet::SkyblockPet;
 pub use models::{UpgradeCost, UpgradeType, enchantment, item, pet, recipe};
 use rustc_hash::FxHashMap;
-pub use utils::repo::download_zip as download_repo;
+pub use utils::{delete_repo, download_repo};
 
 pub struct SkyblockRepo {
 	pub enchantments: FxHashMap<String, SkyblockEnchantment>,
@@ -18,6 +18,16 @@ pub struct SkyblockRepo {
 }
 
 impl SkyblockRepo {
+	/// Creates HashMaps for each category
+	///
+	/// Throws warning log if it encounters a category it did not expect
+	///
+	/// Requires that the `SkyblockRepo` directory exists, which you can create via
+	///
+	/// ```rust
+	/// skyblock_repo::download_repo(true);
+	/// ```
+	#[must_use]
 	pub fn new() -> Result<Self, Box<dyn std::error::Error>> {
 		let entries = fs::read_dir("SkyblockRepo")?;
 
@@ -67,6 +77,8 @@ impl SkyblockRepo {
 		Ok(repo)
 	}
 
+	/// Retrieves an enchantment by its `internalId`
+	#[must_use]
 	pub fn get_enchantment_by_id(
 		&self,
 		id: &str,
@@ -74,6 +86,8 @@ impl SkyblockRepo {
 		self.enchantments.get(id)
 	}
 
+	/// Retrieves an item by its `internalId`
+	#[must_use]
 	pub fn get_item_by_id(
 		&self,
 		id: &str,
@@ -81,6 +95,8 @@ impl SkyblockRepo {
 		self.items.get(id)
 	}
 
+	/// Retrieves a pet by its `internalId`
+	#[must_use]
 	pub fn get_pet_by_id(
 		&self,
 		id: &str,
