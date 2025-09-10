@@ -2,6 +2,8 @@ use std::fs::{File, OpenOptions, create_dir_all, exists, metadata, remove_file, 
 use std::io::{self, Write};
 use std::path::Path;
 
+use log::{error, trace};
+
 pub async fn download_zip(delete_zip: bool) -> Result<(), Box<dyn std::error::Error>> {
 	let url = "https://github.com/SkyblockRepo/Repo/archive/main.zip";
 
@@ -23,7 +25,7 @@ pub async fn download_zip(delete_zip: bool) -> Result<(), Box<dyn std::error::Er
 			return Err(format!("Reqwest failed with status {}", response.status()).into());
 		}
 	} else {
-		eprintln!(
+		error!(
 			"SkyblockRepo-main.zip and/or SkyblockRepo/ directory are present, if you wish to refetch them, delete them."
 		)
 	}
@@ -46,10 +48,10 @@ fn unzip_repo(file: File) -> Result<(), Box<dyn std::error::Error>> {
 		};
 
 		if file.is_dir() {
-			println!("File {} extracted to \"{}\"", i, outpath.display());
+			trace!("File {} extracted to \"{}\"", i, outpath.display());
 			create_dir_all(&outpath)?;
 		} else {
-			println!(
+			trace!(
 				"File {} extracted to \"{}\" ({} bytes)",
 				i,
 				outpath.display(),

@@ -1,20 +1,20 @@
 pub mod models;
 mod utils;
 
-use std::collections::HashMap;
 use std::fs;
 
+use log::{trace, warn};
 use models::enchantment::SkyblockEnchantment;
 use models::item::SkyblockItem;
 use models::pet::SkyblockPet;
-// re-exports
 pub use models::{UpgradeCost, UpgradeType, enchantment, item, pet, recipe};
+use rustc_hash::FxHashMap;
 pub use utils::repo::download_zip as download_repo;
 
 pub struct SkyblockRepo {
-	pub enchantments: HashMap<String, SkyblockEnchantment>,
-	pub items: HashMap<String, SkyblockItem>,
-	pub pets: HashMap<String, SkyblockPet>,
+	pub enchantments: FxHashMap<String, SkyblockEnchantment>,
+	pub items: FxHashMap<String, SkyblockItem>,
+	pub pets: FxHashMap<String, SkyblockPet>,
 }
 
 impl SkyblockRepo {
@@ -22,9 +22,9 @@ impl SkyblockRepo {
 		let entries = fs::read_dir("SkyblockRepo")?;
 
 		let mut repo = Self {
-			enchantments: HashMap::new(),
-			items: HashMap::new(),
-			pets: HashMap::new(),
+			enchantments: FxHashMap::default(),
+			items: FxHashMap::default(),
+			pets: FxHashMap::default(),
 		};
 
 		for repo_entry in entries {
@@ -38,7 +38,10 @@ impl SkyblockRepo {
 				let data_entries = fs::read_dir(&path)?;
 
 				for json in data_entries {
-					let content = fs::read_to_string(path.join(json?.path()))?;
+					let path = path.join(json?.path());
+					trace!("{:?}", path);
+					let content = fs::read_to_string(path)?;
+
 					match dir_name {
 						| "enchantments" => {
 							let parsed: SkyblockEnchantment = serde_json::from_str(&content)?;
@@ -53,7 +56,7 @@ impl SkyblockRepo {
 							repo.pets.insert(parsed.internal_id.clone(), parsed);
 						},
 						| other => {
-							eprintln!("Unknown dir found while parsing SkyblockData: {}", other);
+							warn!("Unknown dir found while parsing SkyblockData: {}", other);
 							continue;
 						},
 					}
