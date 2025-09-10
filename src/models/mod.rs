@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-pub mod enchantments;
+pub mod enchantment;
 pub mod item;
 pub mod pet;
 pub mod recipe;
