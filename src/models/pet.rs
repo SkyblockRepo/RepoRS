@@ -1,4 +1,8 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
+
+use crate::UpgradeCost;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -11,6 +15,7 @@ pub struct SkyblockPet {
 	pub max_level: u8,
 	pub base_stats: Vec<String>,
 	pub pet_flags: Option<PetFlags>,
+	pub rarities: HashMap<String, PetRarity>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
@@ -20,4 +25,16 @@ pub struct PetFlags {
 	pub mountable: bool,
 	pub tradable: bool,
 	pub museumable: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct PetRarity {
+	pub lore: HashMap<String, String>,
+	pub value: Option<f64>,
+	pub kat_upgradeable: Option<bool>,
+	#[serde(default)]
+	pub kat_upgrade_costs: Vec<UpgradeCost>,
+	pub kat_upgrade_seconds: Option<u32>,
+	pub kat_upgrade_time: Option<String>,
 }

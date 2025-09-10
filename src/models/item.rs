@@ -90,11 +90,18 @@ pub struct ItemGemstoneSlot {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct ItemGemstoneSlotCosts {
-	pub kind: String,
+	pub r#type: ItemGemstoneSlotCostsType,
 	pub item_id: Option<String>,
 	pub coins: Option<i32>,
 	#[serde(flatten)]
 	pub extension_data: Option<HashMap<String, Value>>,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum ItemGemstoneSlotCostsType {
+	Coins,
+	Item,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]

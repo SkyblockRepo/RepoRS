@@ -1,8 +1,4 @@
-use std::collections::HashMap;
-
 use serde::{Deserialize, Serialize};
-
-use crate::models::UpgradeCost;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -15,17 +11,4 @@ pub struct SkyblockEnchantment {
 	pub max_level: Option<u8>,
 	#[serde(default)]
 	pub items: Vec<String>,
-	pub pet_rarity: HashMap<String, PetRarity>,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct PetRarity {
-	pub lore: HashMap<String, String>,
-	pub value: Option<f64>,
-	pub kat_upgradeable: Option<bool>,
-	#[serde(default)]
-	pub kat_upgrade_costs: Vec<UpgradeCost>,
-	pub kat_upgrade_seconds: Option<u32>,
-	pub kat_upgrade_time: Option<String>,
 }

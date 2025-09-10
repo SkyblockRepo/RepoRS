@@ -2,6 +2,7 @@ pub mod models;
 mod utils;
 
 use std::fs;
+use std::os::unix::ffi::OsStrExt;
 
 use log::{trace, warn};
 use models::enchantment::SkyblockEnchantment;
@@ -45,12 +46,13 @@ impl SkyblockRepo {
 			}
 
 			if let Some(dir_name) = path.file_name().and_then(|n| n.to_str()) {
+				println!("{:?}", dir_name);
 				let data_entries = fs::read_dir(&path)?;
 
 				for json in data_entries {
-					let path = path.join(json?.path());
-					trace!("{:?}", path);
-					let content = fs::read_to_string(path)?;
+					let json = json?.path();
+					println!("parsing {:?}", json);
+					let content = fs::read_to_string(&json)?;
 
 					match dir_name {
 						| "enchantments" => {
@@ -58,6 +60,16 @@ impl SkyblockRepo {
 							repo.enchantments.insert(parsed.internal_id.clone(), parsed);
 						},
 						| "items" => {
+							// workaround for these items not having an internal id
+							// todo: better fix so that these recipes can be accessed
+							if json.display().to_string().contains("JUMBO_BACKPACK")
+								|| json.display().to_string().contains("INFERNO")
+								|| json.display().to_string().contains("DAEDALUS_BLADE")
+								|| json.display().to_string().contains("GOD_POTION")
+							{
+								continue;
+							}
+
 							let parsed: SkyblockItem = serde_json::from_str(&content)?;
 							repo.items.insert(parsed.internal_id.clone(), parsed);
 						},
