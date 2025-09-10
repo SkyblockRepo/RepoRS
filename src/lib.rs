@@ -2,7 +2,6 @@ pub mod models;
 mod utils;
 
 use std::fs;
-use std::os::unix::ffi::OsStrExt;
 
 use log::{trace, warn};
 use models::enchantment::SkyblockEnchantment;
@@ -46,12 +45,11 @@ impl SkyblockRepo {
 			}
 
 			if let Some(dir_name) = path.file_name().and_then(|n| n.to_str()) {
-				println!("{:?}", dir_name);
 				let data_entries = fs::read_dir(&path)?;
 
 				for json in data_entries {
 					let json = json?.path();
-					println!("parsing {:?}", json);
+					trace!("parsing {:?}", json);
 					let content = fs::read_to_string(&json)?;
 
 					match dir_name {

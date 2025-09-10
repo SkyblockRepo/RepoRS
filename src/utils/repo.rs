@@ -1,4 +1,4 @@
-use std::fs::{File, OpenOptions, create_dir_all, exists, remove_dir, remove_file, rename};
+use std::fs::{File, OpenOptions, create_dir_all, exists, remove_dir_all, remove_file, rename};
 use std::io::{self, Write};
 use std::path::Path;
 
@@ -96,6 +96,6 @@ pub async fn delete_repo_files() -> Result<(), Box<dyn std::error::Error>> {
 			Err(err)
 		}
 	})?;
-	remove_dir("SkyblockRepo")?;
+	remove_dir_all("SkyblockRepo")?;
 	Ok(())
 }
