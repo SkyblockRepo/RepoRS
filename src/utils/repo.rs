@@ -1,13 +1,4 @@
-use std::fs::{
-	File,
-	OpenOptions,
-	create_dir_all,
-	exists,
-	metadata,
-	remove_dir,
-	remove_file,
-	rename,
-};
+use std::fs::{File, OpenOptions, create_dir_all, exists, remove_dir, remove_file, rename};
 use std::io::{self, Write};
 use std::path::Path;
 
@@ -21,7 +12,7 @@ pub async fn download_zip(delete_zip: bool) -> Result<(), Box<dyn std::error::Er
 
 	let response = reqwest::get(url).await?;
 
-	if !(exists("SkyblockRepo-main.zip")? && metadata("SkyblockRepo").is_err()) {
+	if !exists("SkyblockRepo")? || (!exists("SkyblockRepo-main.zip")? && !exists("SkyblockRepo")?) {
 		if response.status() == 200 {
 			let mut file = OpenOptions::new()
 				.read(true)
@@ -39,7 +30,8 @@ pub async fn download_zip(delete_zip: bool) -> Result<(), Box<dyn std::error::Er
 	} else {
 		error!(
 			"SkyblockRepo-main.zip and/or SkyblockRepo/ directory are present, if you wish to refetch them, delete them."
-		)
+		);
+		return Ok(());
 	}
 
 	if delete_zip {
@@ -96,7 +88,14 @@ fn unzip_repo(file: File) -> Result<(), Box<dyn std::error::Error>> {
 }
 
 pub async fn delete_repo_files() -> Result<(), Box<dyn std::error::Error>> {
-	remove_file("SkyblockRepo-main.zip")?;
+	let _ = remove_file("SkyblockRepo-main.zip").or_else(|err| {
+		// stifle file not found error because you can already remove the zip in the download function
+		if err.kind() == io::ErrorKind::NotFound {
+			Ok(())
+		} else {
+			Err(err)
+		}
+	})?;
 	remove_dir("SkyblockRepo")?;
 	Ok(())
 }
