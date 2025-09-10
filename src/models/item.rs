@@ -5,7 +5,7 @@ use serde_json::Value;
 
 use crate::models::recipe::SkyblockRecipe;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SkyblockItem {
 	pub internal_id: String,
@@ -22,7 +22,7 @@ pub struct SkyblockItem {
 	pub recipes: Vec<SkyblockRecipe>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Serialize, Deserialize, Default, PartialEq, Clone)]
 pub struct ItemFlags {
 	pub tradable: bool,
 	pub bazaarable: bool,
@@ -38,7 +38,7 @@ pub struct ItemFlags {
 	pub other: BTreeMap<String, Value>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct ItemResponse {
 	pub id: Option<String>,
 	pub material: Option<String>,
@@ -75,20 +75,20 @@ pub struct ItemResponse {
 	pub extension_data: Option<HashMap<String, Value>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct ItemSkin {
 	pub value: Option<String>,
 	pub signature: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct ItemGemstoneSlot {
 	pub slot_type: Option<String>,
 	#[serde(default)]
 	pub costs: Vec<ItemGemstoneSlotCosts>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct ItemGemstoneSlotCosts {
 	pub kind: String,
 	pub item_id: Option<String>,
@@ -97,7 +97,7 @@ pub struct ItemGemstoneSlotCosts {
 	pub extension_data: Option<HashMap<String, Value>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct ItemRequirement {
 	pub r#type: String,
 	pub skill: Option<String>,
@@ -106,7 +106,7 @@ pub struct ItemRequirement {
 	pub extension_data: Option<HashMap<String, Value>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct ItemMuseumData {
 	pub donation_xp: i32,
 	#[serde(default)]
@@ -118,7 +118,7 @@ pub struct ItemMuseumData {
 	pub extension_data: Option<HashMap<String, Value>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct DungeonItemConversionCost {
 	pub essence_type: Option<String>,
 	pub amount: Option<i32>,
@@ -126,7 +126,7 @@ pub struct DungeonItemConversionCost {
 	pub extension_data: Option<HashMap<String, Value>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct UpgradeCosts {
 	pub r#type: Option<String>,
 	pub essence_type: Option<String>,
@@ -136,7 +136,7 @@ pub struct UpgradeCosts {
 	pub extension_data: Option<HashMap<String, Value>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct CatacombsRequirements {
 	pub r#type: Option<String>,
 	pub dungeon_type: Option<String>,
@@ -145,7 +145,7 @@ pub struct CatacombsRequirements {
 	pub extension_data: Option<HashMap<String, Value>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct ItemTemplate {
 	pub name: Option<String>,
 	pub tradable: Option<String>,

@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::models::UpgradeCost;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SkyblockEnchantment {
 	pub internal_id: String,
@@ -18,7 +18,7 @@ pub struct SkyblockEnchantment {
 	pub pet_rarity: HashMap<String, PetRarity>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct PetRarity {
 	pub lore: HashMap<String, String>,

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SkyblockPet {
 	pub internal_id: String,
@@ -13,7 +13,7 @@ pub struct SkyblockPet {
 	pub pet_flags: Option<PetFlags>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "snake_case")]
 pub struct PetFlags {
 	pub auctionable: bool,

@@ -5,7 +5,7 @@ pub mod item;
 pub mod pet;
 pub mod recipe;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct UpgradeCost {
 	pub r#type: Option<UpgradeType>,
 	pub item_id: Option<String>,
@@ -13,7 +13,7 @@ pub struct UpgradeCost {
 	pub amount: Option<u32>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum UpgradeType {
 	Item,
