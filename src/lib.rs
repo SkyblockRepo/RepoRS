@@ -1,7 +1,9 @@
 pub mod models;
 mod utils;
 
+use std::collections::HashMap;
 use std::fs;
+use std::path::Path;
 
 #[cfg(feature = "log")]
 use log::{trace, warn};
@@ -10,7 +12,15 @@ use models::item::SkyblockItem;
 use models::pet::SkyblockPet;
 pub use models::{UpgradeCost, UpgradeType, enchantment, item, pet, recipe};
 use rustc_hash::FxHashMap;
+use serde::Deserialize;
 pub use utils::{delete_repo, download_repo};
+
+#[derive(Deserialize)]
+struct RepoStructure {
+	#[allow(dead_code)]
+	version: u8,
+	paths: HashMap<String, String>,
+}
 
 pub struct SkyblockRepo {
 	pub enchantments: FxHashMap<String, SkyblockEnchantment>,
@@ -30,7 +40,8 @@ impl SkyblockRepo {
 	/// ```
 	#[must_use]
 	pub fn new() -> Result<Self, Box<dyn std::error::Error>> {
-		let entries = fs::read_dir("SkyblockRepo")?;
+		let structure: RepoStructure =
+			serde_json::from_str(&fs::read_to_string("SkyblockRepo/manifest.json")?)?;
 
 		let mut repo = Self {
 			enchantments: FxHashMap::default(),
@@ -38,42 +49,36 @@ impl SkyblockRepo {
 			pets: FxHashMap::default(),
 		};
 
-		for repo_entry in entries {
-			let path = repo_entry?.path();
+		for path_name in structure.paths.values() {
+			let path = &format!("SkyblockRepo/{}", path_name);
+			let path = Path::new(path);
+			let data_entries = fs::read_dir(&path)?;
 
-			if !path.is_dir() {
-				continue;
-			}
+			for json in data_entries {
+				let json = json?.path();
+				#[cfg(feature = "log")]
+				trace!("parsing {:?}", json);
+				let content = fs::read_to_string(&json)?;
 
-			if let Some(dir_name) = path.file_name().and_then(|n| n.to_str()) {
-				let data_entries = fs::read_dir(&path)?;
-
-				for json in data_entries {
-					let json = json?.path();
-					#[cfg(feature = "log")]
-					trace!("parsing {:?}", json);
-					let content = fs::read_to_string(&json)?;
-
-					match dir_name {
-						| "enchantments" => {
-							let parsed: SkyblockEnchantment = serde_json::from_str(&content)?;
-							repo.enchantments.insert(parsed.internal_id.clone(), parsed);
-						},
-						| "items" => {
-							let parsed: SkyblockItem = serde_json::from_str(&content)?;
-							repo.items.insert(parsed.internal_id.clone(), parsed);
-						},
-						| "pets" => {
-							let parsed: SkyblockPet = serde_json::from_str(&content)?;
-							repo.pets.insert(parsed.internal_id.clone(), parsed);
-						},
-						#[cfg_attr(not(feature = "log"), allow(unused_variables))]
-						| other => {
-							#[cfg(feature = "log")]
-							warn!("Unknown dir found while parsing SkyblockData: {}", other);
-							continue;
-						},
-					}
+				match path_name.as_str() {
+					| "enchantments" => {
+						let parsed: SkyblockEnchantment = serde_json::from_str(&content)?;
+						repo.enchantments.insert(parsed.internal_id.clone(), parsed);
+					},
+					| "items" => {
+						let parsed: SkyblockItem = serde_json::from_str(&content)?;
+						repo.items.insert(parsed.internal_id.clone(), parsed);
+					},
+					| "pets" => {
+						let parsed: SkyblockPet = serde_json::from_str(&content)?;
+						repo.pets.insert(parsed.internal_id.clone(), parsed);
+					},
+					#[cfg_attr(not(feature = "log"), allow(unused_variables))]
+					| other => {
+						#[cfg(feature = "log")]
+						warn!("Unknown dir found while parsing SkyblockData: {}", other);
+						continue;
+					},
 				}
 			}
 		}
