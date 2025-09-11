@@ -1,7 +1,9 @@
+use pyo3::pyclass;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
+#[pyclass]
 pub struct SkyblockEnchantment {
 	pub internal_id: String,
 	pub name: Option<String>,

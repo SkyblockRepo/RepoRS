@@ -4,14 +4,33 @@ use std::path::Path;
 
 #[cfg(feature = "log")]
 use log::{error, trace};
+use pyo3::exceptions::{PyIOError, PyRuntimeError};
+use pyo3::{Bound, PyAny, PyErr, PyResult, Python, pyfunction};
 
 /// Downloads the github SkyblockRepo data and unzips
 ///
 /// You can additonally remove the downloaded zip and only keep the extracted directory by passing in `true`
-pub async fn download_zip(delete_zip: bool) -> Result<(), Box<dyn std::error::Error>> {
+#[pyfunction(name = "download_repo")]
+#[pyo3(signature=(delete_zip=true))]
+pub fn download_zip_python(
+	delete_zip: bool,
+	py: Python,
+) -> PyResult<Bound<PyAny>> {
+	pyo3_async_runtimes::tokio::future_into_py(py, async move {
+		download_zip(delete_zip).await?;
+		Ok(())
+	})
+}
+
+/// Downloads the github SkyblockRepo data and unzips
+///
+/// You can additonally remove the downloaded zip and only keep the extracted directory by passing in `true`
+pub async fn download_zip(delete_zip: bool) -> PyResult<()> {
 	let url = "https://github.com/SkyblockRepo/Repo/archive/main.zip";
 
-	let response = reqwest::get(url).await?;
+	let response = reqwest::get(url)
+		.await
+		.map_err(|e| PyErr::new::<PyRuntimeError, _>(e.to_string()))?;
 
 	if !exists("SkyblockRepo")? || (!exists("SkyblockRepo-main.zip")? && !exists("SkyblockRepo")?) {
 		if response.status() == 200 {
@@ -21,12 +40,18 @@ pub async fn download_zip(delete_zip: bool) -> Result<(), Box<dyn std::error::Er
 				.create_new(true)
 				.open("SkyblockRepo-main.zip")?;
 
-			let content = response.bytes().await?;
+			let content = response
+				.bytes()
+				.await
+				.map_err(|e| PyErr::new::<PyRuntimeError, _>(e.to_string()))?;
 			file.write_all(&content)?;
 
 			unzip_repo(file)?;
 		} else {
-			return Err(format!("Reqwest failed with status {}", response.status()).into());
+			return Err(PyErr::new::<PyRuntimeError, _>(format!(
+				"Reqwest failed with status {}",
+				response.status()
+			)));
 		}
 	} else {
 		#[cfg(feature = "log")]
@@ -43,11 +68,14 @@ pub async fn download_zip(delete_zip: bool) -> Result<(), Box<dyn std::error::Er
 	Ok(())
 }
 
-fn unzip_repo(file: File) -> Result<(), Box<dyn std::error::Error>> {
-	let mut archive = zip::ZipArchive::new(file)?;
+fn unzip_repo(file: File) -> PyResult<()> {
+	let mut archive =
+		zip::ZipArchive::new(file).map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
 
 	for i in 0..archive.len() {
-		let mut file = archive.by_index(i)?;
+		let mut file = archive
+			.by_index(i)
+			.map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
 		let outpath = match file.enclosed_name() {
 			| Some(path) => path,
 			| None => continue,
@@ -91,7 +119,8 @@ fn unzip_repo(file: File) -> Result<(), Box<dyn std::error::Error>> {
 	Ok(())
 }
 
-pub async fn delete_repo_files() -> Result<(), Box<dyn std::error::Error>> {
+#[pyfunction(name = "delete_repo")]
+pub fn delete_repo_files() -> PyResult<()> {
 	let _ = remove_file("SkyblockRepo-main.zip").or_else(|err| {
 		// stifle file not found error because you can already remove the zip in the download function
 		if err.kind() == io::ErrorKind::NotFound {

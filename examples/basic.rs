@@ -32,7 +32,6 @@ async fn main() {
 	start = Instant::now();
 
 	delete_repo()
-		.await
 		.and_then(|_| {
 			println!(
 				"Time taken to delete repo: {}ms",

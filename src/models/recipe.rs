@@ -1,9 +1,11 @@
 use std::collections::HashMap;
 
+use pyo3::pyclass;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
+#[pyclass]
 pub struct SkyblockRecipe {
 	pub name: Option<String>,
 	pub r#type: RecipeType,
@@ -14,6 +16,7 @@ pub struct SkyblockRecipe {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
+#[pyclass]
 pub struct RecipeIngredient {
 	pub item_id: String,
 	pub quantity: i32,
@@ -21,6 +24,7 @@ pub struct RecipeIngredient {
 
 #[derive(Debug, Serialize, Deserialize, Default, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
+#[pyclass]
 pub enum RecipeType {
 	#[default]
 	Crafting,

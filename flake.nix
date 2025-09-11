@@ -17,6 +17,9 @@
         {
           devShells.default = mkShell {
             packages = [
+              # dev deps
+              maturin
+
               # required for rust-analyzer
               openssl
               pkg-config
