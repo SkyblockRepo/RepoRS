@@ -8,6 +8,7 @@ use crate::models::recipe::SkyblockRecipe;
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SkyblockItem {
+	#[serde(default)]
 	pub internal_id: String,
 	pub name: Option<String>,
 	pub category: Option<String>,

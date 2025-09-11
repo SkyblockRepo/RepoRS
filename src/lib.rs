@@ -60,16 +60,6 @@ impl SkyblockRepo {
 							repo.enchantments.insert(parsed.internal_id.clone(), parsed);
 						},
 						| "items" => {
-							// workaround for these items not having an internal id
-							// todo: better fix so that these recipes can be accessed
-							if json.display().to_string().contains("JUMBO_BACKPACK")
-								|| json.display().to_string().contains("INFERNO")
-								|| json.display().to_string().contains("DAEDALUS_BLADE")
-								|| json.display().to_string().contains("GOD_POTION")
-							{
-								continue;
-							}
-
 							let parsed: SkyblockItem = serde_json::from_str(&content)?;
 							repo.items.insert(parsed.internal_id.clone(), parsed);
 						},
@@ -93,6 +83,7 @@ impl SkyblockRepo {
 
 	/// Retrieves an enchantment by its `internalId`
 	#[must_use]
+	#[inline]
 	pub fn get_enchantment_by_id(
 		&self,
 		id: &str,
@@ -102,6 +93,7 @@ impl SkyblockRepo {
 
 	/// Retrieves an item by its `internalId`
 	#[must_use]
+	#[inline]
 	pub fn get_item_by_id(
 		&self,
 		id: &str,
@@ -111,6 +103,7 @@ impl SkyblockRepo {
 
 	/// Retrieves a pet by its `internalId`
 	#[must_use]
+	#[inline]
 	pub fn get_pet_by_id(
 		&self,
 		id: &str,
