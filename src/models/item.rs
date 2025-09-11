@@ -1,5 +1,6 @@
 use std::collections::{BTreeMap, HashMap};
 
+#[cfg(feature = "python")]
 use pyo3::pyclass;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -8,7 +9,7 @@ use crate::models::recipe::SkyblockRecipe;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
-#[pyclass]
+#[cfg_attr(feature = "python", pyclass)]
 pub struct SkyblockItem {
 	#[serde(default)]
 	pub internal_id: String,
@@ -26,7 +27,7 @@ pub struct SkyblockItem {
 }
 
 #[derive(Debug, Serialize, Deserialize, Default, PartialEq, Clone)]
-#[pyclass]
+#[cfg_attr(feature = "python", pyclass)]
 pub struct ItemFlags {
 	pub tradable: bool,
 	pub bazaarable: bool,
@@ -43,7 +44,7 @@ pub struct ItemFlags {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
-#[pyclass]
+#[cfg_attr(feature = "python", pyclass)]
 pub struct ItemResponse {
 	pub id: Option<String>,
 	pub material: Option<String>,
@@ -81,14 +82,14 @@ pub struct ItemResponse {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[pyclass]
+#[cfg_attr(feature = "python", pyclass)]
 pub struct ItemSkin {
 	pub value: Option<String>,
 	pub signature: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[pyclass]
+#[cfg_attr(feature = "python", pyclass)]
 pub struct ItemGemstoneSlot {
 	pub slot_type: Option<String>,
 	#[serde(default)]
@@ -96,7 +97,7 @@ pub struct ItemGemstoneSlot {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[pyclass]
+#[cfg_attr(feature = "python", pyclass)]
 pub struct ItemGemstoneSlotCosts {
 	pub r#type: ItemGemstoneSlotCostsType,
 	pub item_id: Option<String>,
@@ -107,14 +108,14 @@ pub struct ItemGemstoneSlotCosts {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-#[pyclass]
+#[cfg_attr(feature = "python", pyclass)]
 pub enum ItemGemstoneSlotCostsType {
 	Coins,
 	Item,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[pyclass]
+#[cfg_attr(feature = "python", pyclass)]
 pub struct ItemRequirement {
 	pub r#type: String,
 	pub skill: Option<String>,
@@ -124,7 +125,7 @@ pub struct ItemRequirement {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[pyclass]
+#[cfg_attr(feature = "python", pyclass)]
 pub struct ItemMuseumData {
 	pub donation_xp: i32,
 	#[serde(default)]
@@ -137,7 +138,7 @@ pub struct ItemMuseumData {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[pyclass]
+#[cfg_attr(feature = "python", pyclass)]
 pub struct DungeonItemConversionCost {
 	pub essence_type: Option<String>,
 	pub amount: Option<i32>,
@@ -146,7 +147,7 @@ pub struct DungeonItemConversionCost {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[pyclass]
+#[cfg_attr(feature = "python", pyclass)]
 pub struct UpgradeCosts {
 	pub r#type: Option<String>,
 	pub essence_type: Option<String>,
@@ -157,7 +158,7 @@ pub struct UpgradeCosts {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[pyclass]
+#[cfg_attr(feature = "python", pyclass)]
 pub struct CatacombsRequirements {
 	pub r#type: Option<String>,
 	pub dungeon_type: Option<String>,
@@ -167,7 +168,7 @@ pub struct CatacombsRequirements {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[pyclass]
+#[cfg_attr(feature = "python", pyclass)]
 pub struct ItemTemplate {
 	pub name: Option<String>,
 	pub tradable: Option<String>,
