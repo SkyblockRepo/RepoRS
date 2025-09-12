@@ -4,8 +4,6 @@ pub mod python {
 	use std::io::{self, Write};
 	use std::path::Path;
 
-	#[cfg(feature = "log")]
-	use log::{error, trace};
 	use pyo3::exceptions::{PyIOError, PyRuntimeError};
 	use pyo3::*;
 
@@ -47,10 +45,6 @@ pub mod python {
 					)));
 				}
 			} else {
-				#[cfg(feature = "log")]
-				error!(
-					"SkyblockRepo-main.zip and/or SkyblockRepo/ directory are present, if you wish to refetch them, delete them."
-				);
 				return Ok(());
 			}
 
@@ -76,17 +70,8 @@ pub mod python {
 			};
 
 			if file.is_dir() {
-				#[cfg(feature = "log")]
-				trace!("File {} extracted to \"{}\"", i, outpath.display());
 				create_dir_all(&outpath)?;
 			} else {
-				#[cfg(feature = "log")]
-				trace!(
-					"File {} extracted to \"{}\" ({} bytes)",
-					i,
-					outpath.display(),
-					file.size()
-				);
 				if let Some(p) = outpath.parent() {
 					if !p.exists() {
 						create_dir_all(p)?;
