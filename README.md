@@ -1,6 +1,6 @@
-# skyblock-repo
+# RepoRS
 
-Cargo package to interface with the [Skyblock Repo]
+Rust/Python package to interface with the [Skyblock Repo]
 
 ### Adding to your project
 
@@ -16,6 +16,7 @@ pip install skyblock-repo
 
 ### Usage
 
-Look at the [examples](./examples/) for how to use.
+Look at the [examples](./examples) or [Integration docs] for how to use.
 
 [Skyblock Repo]: https://skyblockrepo.com
+[Integration docs]: https://skyblockrepo.com/docs/integrations/rust
