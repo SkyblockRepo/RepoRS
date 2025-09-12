@@ -78,8 +78,6 @@ impl SkyblockRepo {
 
 			for json in data_entries {
 				let json = json?.path();
-				#[cfg(feature = "log")]
-				trace!("parsing {:?}", json);
 				let content = fs::read_to_string(&json)?;
 
 				match path_name.as_str() {
@@ -98,12 +96,7 @@ impl SkyblockRepo {
 							.map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))?;
 						repo.pets.insert(parsed.internal_id.clone(), parsed);
 					},
-					#[cfg_attr(not(feature = "log"), allow(unused_variables))]
-					| other => {
-						#[cfg(feature = "log")]
-						warn!("Unknown dir found while parsing SkyblockData: {}", other);
-						continue;
-					},
+					| _ => continue,
 				}
 			}
 		}
