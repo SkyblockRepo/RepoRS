@@ -2,8 +2,8 @@
 from skyblock_repo import download_repo, delete_repo, SkyblockRepo
 import asyncio
 
-async def main():
-	await download_repo(True)
+def main():
+	download_repo(True)
 
 	repo = SkyblockRepo()
 
@@ -12,4 +12,4 @@ async def main():
 	delete_repo()
 
 if __name__ == "__main__":
-	asyncio.run(main())
+	main()
