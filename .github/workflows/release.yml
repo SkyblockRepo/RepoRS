@@ -1,0 +1,64 @@
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: startsWith(github.event.head_commit.message, 'v')
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get commit version and body
+        id: commit
+        run: |
+          full_msg="${{ github.event.head_commit.message }}"
+          version_num="$(echo "$full_msg" | head -n1)"
+          body="$(echo "$full_msg" | tail -n +2)"
+          
+          {
+            echo "version_num<<EOF"
+            echo "${version_num:1}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo "body<<EOF"
+            echo "$body"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Setup Rust + UV
+        uses: ./.github/actions/setup
+
+      - name: Publish to crates.io
+        run: cargo publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+      - name: Publish to PyPi
+        run: maturin publish
+
+      - name: Create new repo release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.commit.outputs.version_num }}
+          body: |
+            [crates.io release](https://crates.io/crates/skyblock-repo/${{ steps.commit.outputs.version_num }})
+            [PyPi release](https://pypi.org/project/skyblock-repo/${{ steps.commit.outputs.version_num }})
+
+            Add to your project:
+
+            ```sh
+            cargo add skyblock-repo@=${{ steps.commit.outputs.version_num }}
+            ```
+            ```
+            pip install skyblock-repo==${{ steps.commit.outputs.version_num }}
+            ```
+
+            ${{ steps.commit.outputs.body }}

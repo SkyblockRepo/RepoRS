@@ -1,0 +1,22 @@
+on:
+  push:
+    paths:
+      - 'Cargo.toml'
+      - 'pyproject.toml'
+      - 'src/**/*.rs'
+      - '.github/workflows/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust + UV
+        uses: ./.github/actions/setup
+
+      - name: Check Rust
+        run: cargo check
+
+      - name: Build Python
+        run: maturin build
