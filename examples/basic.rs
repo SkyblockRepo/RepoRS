@@ -2,20 +2,14 @@ use std::time::Instant;
 
 use skyblock_repo::{SkyblockRepo, delete_repo, download_repo};
 
-#[tokio::main]
-async fn main() {
+fn main() {
 	let mut start = Instant::now();
-	download_repo(true)
-		.await
-		.and_then(|_| {
-			println!(
-				"Time taken to download and extract repo: {}s",
-				start.elapsed().as_secs_f32()
-			);
-			start = Instant::now();
-			Ok(())
-		})
-		.unwrap();
+	download_repo(true).unwrap();
+	println!(
+		"Time taken to download and extract repo: {}s",
+		start.elapsed().as_secs_f32()
+	);
+	start = Instant::now();
 
 	let data = SkyblockRepo::new().unwrap();
 	println!(
@@ -31,13 +25,9 @@ async fn main() {
 	);
 	start = Instant::now();
 
-	delete_repo()
-		.and_then(|_| {
-			println!(
-				"Time taken to delete repo: {}ms",
-				start.elapsed().as_millis()
-			);
-			Ok(())
-		})
-		.unwrap();
+	delete_repo().unwrap();
+	println!(
+		"Time taken to delete repo: {}ms",
+		start.elapsed().as_millis()
+	);
 }

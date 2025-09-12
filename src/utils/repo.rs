@@ -10,50 +10,45 @@ pub mod python {
 	/// Downloads the github SkyblockRepo data and unzips
 	#[pyfunction(name = "download_repo")]
 	#[pyo3(signature=(delete_zip=true))]
-	pub fn download_zip(
-		delete_zip: bool,
-		py: Python,
-	) -> PyResult<Bound<PyAny>> {
-		pyo3_async_runtimes::tokio::future_into_py(py, async move {
-			let url = "https://github.com/SkyblockRepo/Repo/archive/main.zip";
+	pub fn download_zip(delete_zip: bool) -> PyResult<()> {
+		let url = "https://github.com/SkyblockRepo/Repo/archive/main.zip";
 
-			let response = reqwest::get(url)
-				.await
-				.map_err(|e| PyErr::new::<PyRuntimeError, _>(e.to_string()))?;
+		let mut response = ureq::get(url)
+			.call()
+			.map_err(|e| PyErr::new::<PyRuntimeError, _>(e.to_string()))?;
 
-			if !exists("SkyblockRepo")?
-				|| (!exists("SkyblockRepo-main.zip")? && !exists("SkyblockRepo")?)
-			{
-				if response.status() == 200 {
-					let mut file = OpenOptions::new()
-						.read(true)
-						.write(true)
-						.create_new(true)
-						.open("SkyblockRepo-main.zip")?;
+		if !exists("SkyblockRepo")?
+			|| (!exists("SkyblockRepo-main.zip")? && !exists("SkyblockRepo")?)
+		{
+			if response.status() == 200 {
+				let mut file = OpenOptions::new()
+					.read(true)
+					.write(true)
+					.create_new(true)
+					.open("SkyblockRepo-main.zip")?;
 
-					let content = response
-						.bytes()
-						.await
-						.map_err(|e| PyErr::new::<PyRuntimeError, _>(e.to_string()))?;
-					file.write_all(&content)?;
+				let content = response
+					.body_mut()
+					.read_to_vec()
+					.map_err(|e| PyErr::new::<PyRuntimeError, _>(e.to_string()))?;
+				file.write_all(&content)?;
 
-					unzip_repo(file)?;
-				} else {
-					return Err(PyErr::new::<PyRuntimeError, _>(format!(
-						"Reqwest failed with status {}",
-						response.status()
-					)));
-				}
+				unzip_repo(file)?;
 			} else {
-				return Ok(());
+				return Err(PyErr::new::<PyRuntimeError, _>(format!(
+					"Reqwest failed with status {}",
+					response.status()
+				)));
 			}
+		} else {
+			return Ok(());
+		}
 
-			if delete_zip {
-				remove_file(Path::new("SkyblockRepo-main.zip"))?;
-			}
+		if delete_zip {
+			remove_file(Path::new("SkyblockRepo-main.zip"))?;
+		}
 
-			Ok(())
-		})
+		Ok(())
 	}
 
 	fn unzip_repo(file: File) -> PyResult<()> {
@@ -125,10 +120,10 @@ pub mod rust {
 	/// Downloads the github SkyblockRepo data and unzips
 	///
 	/// You can additonally remove the downloaded zip and only keep the extracted directory by passing in `true`
-	pub async fn download_zip(delete_zip: bool) -> Result<(), Box<dyn std::error::Error>> {
+	pub fn download_zip(delete_zip: bool) -> Result<(), Box<dyn std::error::Error>> {
 		let url = "https://github.com/SkyblockRepo/Repo/archive/main.zip";
 
-		let response = reqwest::get(url).await?;
+		let mut response = ureq::get(url).call()?;
 
 		if !exists("SkyblockRepo")?
 			|| (!exists("SkyblockRepo-main.zip")? && !exists("SkyblockRepo")?)
@@ -140,7 +135,7 @@ pub mod rust {
 					.create_new(true)
 					.open("SkyblockRepo-main.zip")?;
 
-				let content = response.bytes().await?;
+				let content = response.body_mut().read_to_vec()?;
 				file.write_all(&content)?;
 
 				unzip_repo(file)?;
