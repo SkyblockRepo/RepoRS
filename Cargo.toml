@@ -3,7 +3,7 @@ name = "skyblock-repo"
 description = "Cargo/Python package to interface with the Skyblock Repo"
 keywords = ["skyblock", "hypixel", "hypixel-skyblock"]
 
-version = "1.0.3"
+version = "1.0.6"
 edition = "2024"
 
 license = "MIT"

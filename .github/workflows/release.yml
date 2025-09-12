@@ -42,7 +42,10 @@ jobs:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
       - name: Publish to PyPi
-        run: maturin publish
+        run: maturin publish --non-interactive
+        env: 
+          MATURIN_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
+          MATURIN_PYPI_TOKEN: ${{ secrets.MATURIN_PYPI_TOKEN }}
 
       - name: Create new repo release
         uses: softprops/action-gh-release@v2
