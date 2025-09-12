@@ -1,0 +1,28 @@
+name: Setup
+description: Install and cache Rust and uv
+runs:
+  using: 'composite'
+  steps:
+    - uses: dtolnay/rust-toolchain@stable
+      with:
+        target: wasm32-unknown-unknown
+    - uses: Swatinem/rust-cache@v2
+
+    - uses: actions/cache@v4
+      with:
+        path: ~/.cargo/bin/uv
+        key: uv-bin-v0.8.17
+
+    - name: Install uv
+      if: steps.cache-uv.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+
+    - name: Add uv to PATH
+      shell: bash
+      run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+    - name: Install maturin
+      shell: bash
+      run: uv tool install maturin
