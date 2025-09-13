@@ -111,7 +111,7 @@ impl SkyblockRepo {
 		&self,
 		id: &str,
 	) -> Option<SkyblockEnchantment> {
-		self.enchantments.get(id).cloned()
+		self.enchantments.get(&id.to_uppercase()).cloned()
 	}
 
 	/// Retrieves an item by its `internalId`
@@ -121,7 +121,7 @@ impl SkyblockRepo {
 		&self,
 		id: &str,
 	) -> Option<SkyblockItem> {
-		self.items.get(id).cloned()
+		self.items.get(&id.to_uppercase()).cloned()
 	}
 
 	/// Retrieves a pet by its `internalId`
@@ -131,7 +131,7 @@ impl SkyblockRepo {
 		&self,
 		id: &str,
 	) -> Option<SkyblockPet> {
-		self.pets.get(id).cloned()
+		self.pets.get(&id.to_uppercase()).cloned()
 	}
 }
 
@@ -191,7 +191,7 @@ impl SkyblockRepo {
 		&self,
 		id: &str,
 	) -> Option<SkyblockEnchantment> {
-		self.enchantments.get(id).cloned()
+		self.enchantments.get(&id.to_uppercase()).cloned()
 	}
 
 	/// Retrieves an item by its `internalId`
@@ -201,7 +201,7 @@ impl SkyblockRepo {
 		&self,
 		id: &str,
 	) -> Option<SkyblockItem> {
-		self.items.get(id).cloned()
+		self.items.get(&id.to_uppercase()).cloned()
 	}
 
 	/// Retrieves a pet by its `internalId`
@@ -211,6 +211,6 @@ impl SkyblockRepo {
 		&self,
 		id: &str,
 	) -> Option<SkyblockPet> {
-		self.pets.get(id).cloned()
+		self.pets.get(&id.to_uppercase()).cloned()
 	}
 }

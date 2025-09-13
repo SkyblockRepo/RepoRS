@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from skyblock_repo import download_repo, delete_repo, SkyblockRepo
-import asyncio
 
 def main():
 	download_repo(True)
