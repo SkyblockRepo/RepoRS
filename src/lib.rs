@@ -132,7 +132,7 @@ impl SkyblockRepo {
 		self.items.get(&id.to_uppercase()).cloned()
 	}
 
-	/// Retrieves a pet by its `internalId`
+	/// Retrieves an npc by its `internalId`
 	#[must_use]
 	#[inline]
 	pub fn get_npc_by_id(
@@ -227,7 +227,7 @@ impl SkyblockRepo {
 		self.items.get(&id.to_uppercase()).cloned()
 	}
 
-	/// Retrieves a pet by its `internalId`
+	/// Retrieves an npc by its `internalId`
 	#[must_use]
 	#[inline]
 	pub fn get_npc_by_id(
