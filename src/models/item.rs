@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 
 #[cfg(feature = "python")]
 use pyo3::pyclass;
@@ -37,10 +37,6 @@ pub struct ItemFlags {
 	pub museumable: bool,
 	pub soulboundable: bool,
 	pub sackable: bool,
-
-	/// unknown fields
-	#[serde(flatten)]
-	pub other: BTreeMap<String, Value>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
@@ -55,17 +51,23 @@ pub struct ItemResponse {
 	pub name: Option<String>,
 	pub category: Option<String>,
 	pub tier: Option<String>,
-	pub unstackable: Option<bool>,
-	pub glowing: Option<bool>,
+	#[serde(default)]
+	pub unstackable: bool,
+	#[serde(default)]
+	pub glowing: bool,
 	pub npc_sell_price: Option<f64>,
-	pub can_auction: Option<bool>,
-	pub can_trade: Option<bool>,
-	pub can_place: Option<bool>,
+	#[serde(default)]
+	pub can_auction: bool,
+	#[serde(default)]
+	pub can_trade: bool,
+	#[serde(default)]
+	pub can_place: bool,
 	#[serde(default)]
 	pub gemstone_slots: Vec<ItemGemstoneSlot>,
 	#[serde(default)]
 	pub requirements: Vec<ItemRequirement>,
-	pub museum: Option<bool>,
+	#[serde(default)]
+	pub museum: bool,
 	pub museum_data: Option<ItemMuseumData>,
 	pub stats: Option<std::collections::HashMap<String, f64>>,
 	pub generator_tier: Option<i32>,
@@ -74,11 +76,11 @@ pub struct ItemResponse {
 	pub upgrade_costs: Vec<Vec<UpgradeCosts>>,
 	#[serde(default)]
 	pub catacombs_requirements: Vec<CatacombsRequirements>,
-	pub hide_from_viewrecipe_command: Option<bool>,
-	pub salvagable_from_recipe: Option<bool>,
+	#[serde(default)]
+	pub hide_from_viewrecipe_command: bool,
+	#[serde(default)]
+	pub salvagable_from_recipe: bool,
 	pub item_specific: Option<Value>,
-	#[serde(flatten)]
-	pub extension_data: Option<HashMap<String, Value>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
@@ -102,8 +104,6 @@ pub struct ItemGemstoneSlotCosts {
 	pub r#type: ItemGemstoneSlotCostsType,
 	pub item_id: Option<String>,
 	pub coins: Option<i32>,
-	#[serde(flatten)]
-	pub extension_data: Option<HashMap<String, Value>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
@@ -120,8 +120,6 @@ pub struct ItemRequirement {
 	pub r#type: String,
 	pub skill: Option<String>,
 	pub level: Option<i32>,
-	#[serde(flatten)]
-	pub extension_data: Option<HashMap<String, Value>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
@@ -133,8 +131,6 @@ pub struct ItemMuseumData {
 	pub r#type: Option<String>,
 	pub armor_set_donation_xp: Option<HashMap<String, i32>>,
 	pub game_stage: Option<String>,
-	#[serde(flatten)]
-	pub extension_data: Option<HashMap<String, Value>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
@@ -142,8 +138,6 @@ pub struct ItemMuseumData {
 pub struct DungeonItemConversionCost {
 	pub essence_type: Option<String>,
 	pub amount: Option<i32>,
-	#[serde(flatten)]
-	pub extension_data: Option<HashMap<String, Value>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
@@ -153,8 +147,6 @@ pub struct UpgradeCosts {
 	pub essence_type: Option<String>,
 	pub item_id: Option<String>,
 	pub amount: Option<i32>,
-	#[serde(flatten)]
-	pub extension_data: Option<HashMap<String, Value>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
@@ -163,8 +155,6 @@ pub struct CatacombsRequirements {
 	pub r#type: Option<String>,
 	pub dungeon_type: Option<String>,
 	pub level: Option<i32>,
-	#[serde(flatten)]
-	pub extension_data: Option<HashMap<String, Value>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]

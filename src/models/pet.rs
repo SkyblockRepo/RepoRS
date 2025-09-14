@@ -37,7 +37,8 @@ pub struct PetFlags {
 pub struct PetRarity {
 	pub lore: HashMap<String, String>,
 	pub value: Option<f64>,
-	pub kat_upgradeable: Option<bool>,
+	#[serde(default)]
+	pub kat_upgradeable: bool,
 	#[serde(default)]
 	pub kat_upgrade_costs: Vec<UpgradeCost>,
 	pub kat_upgrade_seconds: Option<u32>,
