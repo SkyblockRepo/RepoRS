@@ -9,23 +9,27 @@ pub mod python {
 
 	/// Downloads the github SkyblockRepo data and unzips
 	#[pyfunction(name = "download_repo")]
-	#[pyo3(signature=(delete_zip=true))]
-	pub fn download_zip(delete_zip: bool) -> PyResult<()> {
-		let url = "https://github.com/SkyblockRepo/Repo/archive/main.zip";
+	#[pyo3(signature=(delete_zip=true, commit="main"))]
+	pub fn download_zip(
+		delete_zip: bool,
+		commit: &str,
+	) -> PyResult<()> {
+		let url = format!(
+			"https://github.com/SkyblockRepo/Repo/archive/{}.zip",
+			commit
+		);
 
 		let mut response = ureq::get(url)
 			.call()
 			.map_err(|e| PyErr::new::<PyRuntimeError, _>(e.to_string()))?;
 
-		if !exists("SkyblockRepo")?
-			|| (!exists("SkyblockRepo-main.zip")? && !exists("SkyblockRepo")?)
-		{
+		if !exists("SkyblockRepo")? || (!exists("SkyblockRepo.zip")? && !exists("SkyblockRepo")?) {
 			if response.status() == 200 {
 				let mut file = OpenOptions::new()
 					.read(true)
 					.write(true)
 					.create_new(true)
-					.open("SkyblockRepo-main.zip")?;
+					.open("SkyblockRepo.zip")?;
 
 				let content = response
 					.body_mut()
@@ -33,7 +37,7 @@ pub mod python {
 					.map_err(|e| PyErr::new::<PyRuntimeError, _>(e.to_string()))?;
 				file.write_all(&content)?;
 
-				unzip_repo(file)?;
+				unzip_repo(file, commit)?;
 			} else {
 				return Err(PyErr::new::<PyRuntimeError, _>(format!(
 					"Reqwest failed with status {}",
@@ -45,13 +49,16 @@ pub mod python {
 		}
 
 		if delete_zip {
-			remove_file(Path::new("SkyblockRepo-main.zip"))?;
+			remove_file(Path::new("SkyblockRepo.zip"))?;
 		}
 
 		Ok(())
 	}
 
-	fn unzip_repo(file: File) -> PyResult<()> {
+	fn unzip_repo(
+		file: File,
+		commit: &str,
+	) -> PyResult<()> {
 		let mut archive =
 			zip::ZipArchive::new(file).map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
 
@@ -88,14 +95,17 @@ pub mod python {
 			}
 		}
 
-		rename(Path::new("Repo-main"), Path::new("SkyblockRepo"))?;
+		rename(
+			Path::new(&format!("Repo-{}", commit)),
+			Path::new("SkyblockRepo"),
+		)?;
 
 		Ok(())
 	}
 
 	#[pyfunction(name = "delete_repo")]
 	pub fn delete_repo_files() -> PyResult<()> {
-		let _ = remove_file("SkyblockRepo-main.zip").or_else(|err| {
+		let _ = remove_file("SkyblockRepo.zip").or_else(|err| {
 			// stifle file not found error because you can already remove the zip in the download function
 			if err.kind() == io::ErrorKind::NotFound {
 				Ok(())
@@ -120,44 +130,52 @@ pub mod rust {
 	/// Downloads the github SkyblockRepo data and unzips
 	///
 	/// You can additonally remove the downloaded zip and only keep the extracted directory by passing in `true`
-	pub fn download_zip(delete_zip: bool) -> Result<(), Box<dyn std::error::Error>> {
-		let url = "https://github.com/SkyblockRepo/Repo/archive/main.zip";
+	pub fn download_zip(
+		delete_zip: bool,
+		commit: Option<&str>,
+	) -> Result<(), Box<dyn std::error::Error>> {
+		let commit = commit.unwrap_or("main");
+		let url = format!(
+			"https://github.com/SkyblockRepo/Repo/archive/{}.zip",
+			commit
+		);
 
 		let mut response = ureq::get(url).call()?;
 
-		if !exists("SkyblockRepo")?
-			|| (!exists("SkyblockRepo-main.zip")? && !exists("SkyblockRepo")?)
-		{
+		if !exists("SkyblockRepo")? || (!exists("SkyblockRepo.zip")? && !exists("SkyblockRepo")?) {
 			if response.status() == 200 {
 				let mut file = OpenOptions::new()
 					.read(true)
 					.write(true)
 					.create_new(true)
-					.open("SkyblockRepo-main.zip")?;
+					.open("SkyblockRepo.zip")?;
 
 				let content = response.body_mut().read_to_vec()?;
 				file.write_all(&content)?;
 
-				unzip_repo(file)?;
+				unzip_repo(file, commit)?;
 			} else {
 				return Err(format!("Reqwest failed with status {}", response.status()).into());
 			}
 		} else {
 			#[cfg(feature = "log")]
 			error!(
-				"SkyblockRepo-main.zip and/or SkyblockRepo/ directory are present, if you wish to refetch them, delete them."
+				"SkyblockRepo.zip and/or SkyblockRepo/ directory are present, if you wish to refetch them, delete them."
 			);
 			return Ok(());
 		}
 
 		if delete_zip {
-			remove_file(Path::new("SkyblockRepo-main.zip"))?;
+			remove_file(Path::new("SkyblockRepo.zip"))?;
 		}
 
 		Ok(())
 	}
 
-	fn unzip_repo(file: File) -> Result<(), Box<dyn std::error::Error>> {
+	fn unzip_repo(
+		file: File,
+		commit: &str,
+	) -> Result<(), Box<dyn std::error::Error>> {
 		let mut archive = zip::ZipArchive::new(file)?;
 
 		for i in 0..archive.len() {
@@ -200,13 +218,16 @@ pub mod rust {
 			}
 		}
 
-		rename(Path::new("Repo-main"), Path::new("SkyblockRepo"))?;
+		rename(
+			Path::new(&format!("Repo-{}", commit)),
+			Path::new("SkyblockRepo"),
+		)?;
 
 		Ok(())
 	}
 
 	pub fn delete_repo_files() -> Result<(), Box<dyn std::error::Error>> {
-		let _ = remove_file("SkyblockRepo-main.zip").or_else(|err| {
+		let _ = remove_file("SkyblockRepo.zip").or_else(|err| {
 			// stifle file not found error because you can already remove the zip in the download function
 			if err.kind() == io::ErrorKind::NotFound {
 				Ok(())

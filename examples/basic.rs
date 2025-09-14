@@ -4,7 +4,7 @@ use skyblock_repo::{SkyblockRepo, delete_repo, download_repo};
 
 fn main() {
 	let mut start = Instant::now();
-	download_repo(true).unwrap();
+	download_repo(false, None).unwrap();
 	println!(
 		"Time taken to download and extract repo: {}s",
 		start.elapsed().as_secs_f32()

@@ -1,4 +1,6 @@
 /target
-SkyblockRepo-main.zip
-/SkyblockRepo
 /.venv
+
+/SkyblockRepo
+/Repo-**
+**.zip

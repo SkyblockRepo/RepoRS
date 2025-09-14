@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
-#[cfg(feature = "log")]
+#[cfg(all(feature = "log", not(feature = "python")))]
 use log::{trace, warn};
 use models::enchantment::SkyblockEnchantment;
 use models::item::SkyblockItem;
