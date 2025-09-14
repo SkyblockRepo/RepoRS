@@ -9,6 +9,7 @@ use std::path::Path;
 use log::{trace, warn};
 use models::enchantment::SkyblockEnchantment;
 use models::item::SkyblockItem;
+use models::npc::SkyblockNpc;
 use models::pet::SkyblockPet;
 pub use models::{UpgradeCost, UpgradeType, enchantment, item, pet, recipe};
 #[cfg(feature = "python")]
@@ -43,6 +44,7 @@ struct RepoStructure {
 pub struct SkyblockRepo {
 	pub enchantments: FxHashMap<String, SkyblockEnchantment>,
 	pub items: FxHashMap<String, SkyblockItem>,
+	pub npcs: FxHashMap<String, SkyblockNpc>,
 	pub pets: FxHashMap<String, SkyblockPet>,
 }
 
@@ -68,6 +70,7 @@ impl SkyblockRepo {
 		let mut repo = Self {
 			enchantments: FxHashMap::default(),
 			items: FxHashMap::default(),
+			npcs: FxHashMap::default(),
 			pets: FxHashMap::default(),
 		};
 
@@ -90,6 +93,11 @@ impl SkyblockRepo {
 						let parsed: SkyblockItem = serde_json::from_str(&content)
 							.map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))?;
 						repo.items.insert(parsed.internal_id.clone(), parsed);
+					},
+					| "npcs" => {
+						let parsed: SkyblockNpc = serde_json::from_str(&content)
+							.map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))?;
+						repo.npcs.insert(parsed.internal_id.clone(), parsed);
 					},
 					| "pets" => {
 						let parsed: SkyblockPet = serde_json::from_str(&content)
@@ -127,6 +135,16 @@ impl SkyblockRepo {
 	/// Retrieves a pet by its `internalId`
 	#[must_use]
 	#[inline]
+	pub fn get_npc_by_id(
+		&self,
+		id: &str,
+	) -> Option<SkyblockNpc> {
+		self.npcs.get(&id.to_uppercase()).cloned()
+	}
+
+	/// Retrieves a pet by its `internalId`
+	#[must_use]
+	#[inline]
 	pub fn get_pet_by_id(
 		&self,
 		id: &str,
@@ -144,6 +162,7 @@ impl SkyblockRepo {
 		let mut repo = Self {
 			enchantments: FxHashMap::default(),
 			items: FxHashMap::default(),
+			npcs: FxHashMap::default(),
 			pets: FxHashMap::default(),
 		};
 
@@ -166,6 +185,10 @@ impl SkyblockRepo {
 					| "items" => {
 						let parsed: SkyblockItem = serde_json::from_str(&content)?;
 						repo.items.insert(parsed.internal_id.clone(), parsed);
+					},
+					| "npcs" => {
+						let parsed: SkyblockNpc = serde_json::from_str(&content)?;
+						repo.npcs.insert(parsed.internal_id.clone(), parsed);
 					},
 					| "pets" => {
 						let parsed: SkyblockPet = serde_json::from_str(&content)?;
@@ -202,6 +225,16 @@ impl SkyblockRepo {
 		id: &str,
 	) -> Option<SkyblockItem> {
 		self.items.get(&id.to_uppercase()).cloned()
+	}
+
+	/// Retrieves a pet by its `internalId`
+	#[must_use]
+	#[inline]
+	pub fn get_npc_by_id(
+		&self,
+		id: &str,
+	) -> Option<SkyblockNpc> {
+		self.npcs.get(&id.to_uppercase()).cloned()
 	}
 
 	/// Retrieves a pet by its `internalId`

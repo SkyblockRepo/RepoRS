@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 pub mod enchantment;
 pub mod item;
+pub mod npc;
 pub mod pet;
 pub mod recipe;
 
@@ -23,4 +24,12 @@ pub enum UpgradeType {
 	Item,
 	Essence,
 	Coins,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[cfg_attr(feature = "python", pyclass)]
+pub struct Coordinates {
+	pub x: f64,
+	pub y: f64,
+	pub z: f64,
 }
