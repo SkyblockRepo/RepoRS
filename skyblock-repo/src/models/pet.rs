@@ -1,14 +1,16 @@
 use std::collections::HashMap;
 
 #[cfg(feature = "python")]
-use pyo3::pyclass;
+use pyo3::{pyclass, pymethods};
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "python")]
+use skyblock_repo_macros::PyStr;
 
 use crate::UpgradeCost;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
-#[cfg_attr(feature = "python", pyclass)]
+#[cfg_attr(feature = "python", pyclass, derive(PyStr))]
 pub struct SkyblockPet {
 	pub internal_id: String,
 	pub name: Option<String>,
@@ -23,7 +25,7 @@ pub struct SkyblockPet {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "snake_case")]
-#[cfg_attr(feature = "python", pyclass)]
+#[cfg_attr(feature = "python", pyclass, derive(PyStr))]
 pub struct PetFlags {
 	pub auctionable: bool,
 	pub mountable: bool,
@@ -33,7 +35,7 @@ pub struct PetFlags {
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[cfg_attr(feature = "python", pyclass)]
+#[cfg_attr(feature = "python", pyclass, derive(PyStr))]
 pub struct PetRarity {
 	pub lore: HashMap<String, String>,
 	pub value: Option<f64>,

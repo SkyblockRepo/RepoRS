@@ -1,12 +1,14 @@
 #[cfg(feature = "python")]
-use pyo3::pyclass;
+use pyo3::{pyclass, pymethods};
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "python")]
+use skyblock_repo_macros::PyStr;
 
 use crate::models::Coordinates;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
-#[cfg_attr(feature = "python", pyclass)]
+#[cfg_attr(feature = "python", pyclass, derive(PyStr))]
 pub struct SkyblockNpc {
 	#[serde(default)]
 	pub internal_id: String,
@@ -17,7 +19,7 @@ pub struct SkyblockNpc {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[cfg_attr(feature = "python", pyclass)]
+#[cfg_attr(feature = "python", pyclass, derive(PyStr))]
 pub struct NpcFlags {
 	pub merchant: bool,
 	pub abiphone: bool,
@@ -27,7 +29,7 @@ pub struct NpcFlags {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
-#[cfg_attr(feature = "python", pyclass)]
+#[cfg_attr(feature = "python", pyclass, derive(PyStr))]
 pub struct NpcLocation {
 	pub zone: Option<String>,
 	pub coordinates: Option<Coordinates>,
@@ -35,7 +37,7 @@ pub struct NpcLocation {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
-#[cfg_attr(feature = "python", pyclass)]
+#[cfg_attr(feature = "python", pyclass, derive(PyStr))]
 pub struct NpcGardenVisitor {
 	pub rarity: String,
 	pub garden_level: u8,

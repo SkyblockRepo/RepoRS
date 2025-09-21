@@ -1,7 +1,7 @@
 use heck::ToPascalCase;
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{Ident, parse_macro_input};
+use syn::{DeriveInput, Ident, parse_macro_input};
 
 #[proc_macro]
 pub fn getter(input: TokenStream) -> TokenStream {
@@ -22,6 +22,23 @@ pub fn getter(input: TokenStream) -> TokenStream {
 		#[inline]
 		pub fn #method_ident(&self, id: &str) -> Option<#pascal_ident> {
 			self.#plural_ident.get(&id.to_uppercase()).cloned()
+		}
+	};
+
+	expanded.into()
+}
+
+#[proc_macro_derive(PyStr)]
+pub fn derive_pystr(input: TokenStream) -> TokenStream {
+	let input = parse_macro_input!(input as DeriveInput);
+	let name = &input.ident;
+
+	let expanded = quote! {
+		#[pymethods]
+		impl #name {
+			fn __str__(&self) -> String {
+				serde_json::to_string(self).unwrap()
+			}
 		}
 	};
 
