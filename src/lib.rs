@@ -9,7 +9,10 @@ use std::path::Path;
 use log::{trace, warn};
 use models::enchantment::SkyblockEnchantment;
 use models::item::SkyblockItem;
+use models::npc::SkyblockNpc;
 use models::pet::SkyblockPet;
+use models::shop::SkyblockShop;
+use models::zone::SkyblockZone;
 pub use models::{UpgradeCost, UpgradeType, enchantment, item, pet, recipe};
 #[cfg(feature = "python")]
 use pyo3::exceptions::PyValueError;
@@ -43,7 +46,10 @@ struct RepoStructure {
 pub struct SkyblockRepo {
 	pub enchantments: FxHashMap<String, SkyblockEnchantment>,
 	pub items: FxHashMap<String, SkyblockItem>,
+	pub npcs: FxHashMap<String, SkyblockNpc>,
 	pub pets: FxHashMap<String, SkyblockPet>,
+	pub shops: FxHashMap<String, SkyblockShop>,
+	pub zones: FxHashMap<String, SkyblockZone>,
 }
 
 #[cfg(feature = "python")]
@@ -68,7 +74,10 @@ impl SkyblockRepo {
 		let mut repo = Self {
 			enchantments: FxHashMap::default(),
 			items: FxHashMap::default(),
+			npcs: FxHashMap::default(),
 			pets: FxHashMap::default(),
+			shops: FxHashMap::default(),
+			zones: FxHashMap::default(),
 		};
 
 		for path_name in structure.paths.values() {
@@ -91,10 +100,25 @@ impl SkyblockRepo {
 							.map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))?;
 						repo.items.insert(parsed.internal_id.clone(), parsed);
 					},
+					| "npcs" => {
+						let parsed: SkyblockNpc = serde_json::from_str(&content)
+							.map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))?;
+						repo.npcs.insert(parsed.internal_id.clone(), parsed);
+					},
 					| "pets" => {
 						let parsed: SkyblockPet = serde_json::from_str(&content)
 							.map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))?;
 						repo.pets.insert(parsed.internal_id.clone(), parsed);
+					},
+					| "shops" => {
+						let parsed: SkyblockShop = serde_json::from_str(&content)
+							.map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))?;
+						repo.shops.insert(parsed.internal_id.clone(), parsed);
+					},
+					| "zones" => {
+						let parsed: SkyblockZone = serde_json::from_str(&content)
+							.map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))?;
+						repo.zones.insert(parsed.internal_id.clone(), parsed);
 					},
 					| _ => continue,
 				}
@@ -124,6 +148,16 @@ impl SkyblockRepo {
 		self.items.get(&id.to_uppercase()).cloned()
 	}
 
+	/// Retrieves an npc by its `internalId`
+	#[must_use]
+	#[inline]
+	pub fn get_npc_by_id(
+		&self,
+		id: &str,
+	) -> Option<SkyblockNpc> {
+		self.npcs.get(&id.to_uppercase()).cloned()
+	}
+
 	/// Retrieves a pet by its `internalId`
 	#[must_use]
 	#[inline]
@@ -132,6 +166,26 @@ impl SkyblockRepo {
 		id: &str,
 	) -> Option<SkyblockPet> {
 		self.pets.get(&id.to_uppercase()).cloned()
+	}
+
+	/// Retrieves a shop by its `internalId`
+	#[must_use]
+	#[inline]
+	pub fn get_shop_by_id(
+		&self,
+		id: &str,
+	) -> Option<SkyblockShop> {
+		self.shops.get(&id.to_uppercase()).cloned()
+	}
+
+	/// Retrieves a zone by its `internalId`
+	#[must_use]
+	#[inline]
+	pub fn get_zone_by_id(
+		&self,
+		id: &str,
+	) -> Option<SkyblockZone> {
+		self.zones.get(&id.to_uppercase()).cloned()
 	}
 }
 
@@ -144,7 +198,10 @@ impl SkyblockRepo {
 		let mut repo = Self {
 			enchantments: FxHashMap::default(),
 			items: FxHashMap::default(),
+			npcs: FxHashMap::default(),
 			pets: FxHashMap::default(),
+			shops: FxHashMap::default(),
+			zones: FxHashMap::default(),
 		};
 
 		for path_name in structure.paths.values() {
@@ -167,9 +224,21 @@ impl SkyblockRepo {
 						let parsed: SkyblockItem = serde_json::from_str(&content)?;
 						repo.items.insert(parsed.internal_id.clone(), parsed);
 					},
+					| "npcs" => {
+						let parsed: SkyblockNpc = serde_json::from_str(&content)?;
+						repo.npcs.insert(parsed.internal_id.clone(), parsed);
+					},
 					| "pets" => {
 						let parsed: SkyblockPet = serde_json::from_str(&content)?;
 						repo.pets.insert(parsed.internal_id.clone(), parsed);
+					},
+					| "shops" => {
+						let parsed: SkyblockShop = serde_json::from_str(&content)?;
+						repo.shops.insert(parsed.internal_id.clone(), parsed);
+					},
+					| "zones" => {
+						let parsed: SkyblockZone = serde_json::from_str(&content)?;
+						repo.zones.insert(parsed.internal_id.clone(), parsed);
 					},
 					#[cfg_attr(not(feature = "log"), allow(unused_variables))]
 					| other => {
@@ -204,6 +273,16 @@ impl SkyblockRepo {
 		self.items.get(&id.to_uppercase()).cloned()
 	}
 
+	/// Retrieves an npc by its `internalId`
+	#[must_use]
+	#[inline]
+	pub fn get_npc_by_id(
+		&self,
+		id: &str,
+	) -> Option<SkyblockNpc> {
+		self.npcs.get(&id.to_uppercase()).cloned()
+	}
+
 	/// Retrieves a pet by its `internalId`
 	#[must_use]
 	#[inline]
@@ -212,5 +291,25 @@ impl SkyblockRepo {
 		id: &str,
 	) -> Option<SkyblockPet> {
 		self.pets.get(&id.to_uppercase()).cloned()
+	}
+
+	/// Retrieves a shop by its `internalId`
+	#[must_use]
+	#[inline]
+	pub fn get_shop_by_id(
+		&self,
+		id: &str,
+	) -> Option<SkyblockShop> {
+		self.shops.get(&id.to_uppercase()).cloned()
+	}
+
+	/// Retrieves a zone by its `internalId`
+	#[must_use]
+	#[inline]
+	pub fn get_zone_by_id(
+		&self,
+		id: &str,
+	) -> Option<SkyblockZone> {
+		self.zones.get(&id.to_uppercase()).cloned()
 	}
 }
