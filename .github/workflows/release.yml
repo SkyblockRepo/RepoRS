@@ -37,7 +37,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Publish to crates.io
-        run: cargo publish
+        run: cargo publish -p skyblock-repo
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 

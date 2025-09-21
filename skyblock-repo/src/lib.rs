@@ -22,6 +22,8 @@ use pyo3::prelude::*;
 use pyo3::types::PyModule;
 use rustc_hash::FxHashMap;
 use serde::Deserialize;
+#[cfg(not(feature = "python"))]
+use skyblock_repo_macros::getter;
 pub use utils::{delete_repo, download_repo};
 
 #[cfg(feature = "python")]
@@ -253,63 +255,10 @@ impl SkyblockRepo {
 		Ok(repo)
 	}
 
-	/// Retrieves an enchantment by its `internalId`
-	#[must_use]
-	#[inline]
-	pub fn get_enchantment_by_id(
-		&self,
-		id: &str,
-	) -> Option<SkyblockEnchantment> {
-		self.enchantments.get(&id.to_uppercase()).cloned()
-	}
-
-	/// Retrieves an item by its `internalId`
-	#[must_use]
-	#[inline]
-	pub fn get_item_by_id(
-		&self,
-		id: &str,
-	) -> Option<SkyblockItem> {
-		self.items.get(&id.to_uppercase()).cloned()
-	}
-
-	/// Retrieves an npc by its `internalId`
-	#[must_use]
-	#[inline]
-	pub fn get_npc_by_id(
-		&self,
-		id: &str,
-	) -> Option<SkyblockNpc> {
-		self.npcs.get(&id.to_uppercase()).cloned()
-	}
-
-	/// Retrieves a pet by its `internalId`
-	#[must_use]
-	#[inline]
-	pub fn get_pet_by_id(
-		&self,
-		id: &str,
-	) -> Option<SkyblockPet> {
-		self.pets.get(&id.to_uppercase()).cloned()
-	}
-
-	/// Retrieves a shop by its `internalId`
-	#[must_use]
-	#[inline]
-	pub fn get_shop_by_id(
-		&self,
-		id: &str,
-	) -> Option<SkyblockShop> {
-		self.shops.get(&id.to_uppercase()).cloned()
-	}
-
-	/// Retrieves a zone by its `internalId`
-	#[must_use]
-	#[inline]
-	pub fn get_zone_by_id(
-		&self,
-		id: &str,
-	) -> Option<SkyblockZone> {
-		self.zones.get(&id.to_uppercase()).cloned()
-	}
+	getter!(enchantment);
+	getter!(item);
+	getter!(pet);
+	getter!(npc);
+	getter!(shop);
+	getter!(zone);
 }
