@@ -7,6 +7,7 @@ pub mod item;
 pub mod npc;
 pub mod pet;
 pub mod recipe;
+pub mod shop;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[cfg_attr(feature = "python", pyclass)]
