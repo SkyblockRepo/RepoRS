@@ -8,6 +8,7 @@ pub mod npc;
 pub mod pet;
 pub mod recipe;
 pub mod shop;
+pub mod zone;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[cfg_attr(feature = "python", pyclass)]
@@ -25,6 +26,9 @@ pub enum UpgradeType {
 	Item,
 	Essence,
 	Coins,
+	Pelts,
+	Motes,
+	JacobMedal,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
