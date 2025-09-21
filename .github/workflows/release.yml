@@ -17,7 +17,7 @@ jobs:
       - name: Get commit version and body
         id: commit
         run: |
-          full_msg="${{ github.event.head_commit.message }}"
+          full_msg='${{ github.event.head_commit.message }}'
           version_num="$(echo "$full_msg" | head -n1)"
           body="$(echo "$full_msg" | tail -n +2)"
           
@@ -37,7 +37,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Publish to crates.io
-        run: cargo publish -p skyblock-repo
+        run: cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
