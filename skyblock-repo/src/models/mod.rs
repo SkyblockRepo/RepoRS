@@ -18,6 +18,7 @@ pub struct UpgradeCost {
 	pub r#type: Option<UpgradeType>,
 	pub item_id: Option<String>,
 	pub essence_type: Option<String>,
+	pub medal_type: Option<String>,
 	pub amount: Option<u32>,
 }
 
